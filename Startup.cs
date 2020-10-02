@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace WebApiApp
 {
@@ -22,10 +24,11 @@ namespace WebApiApp
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+       
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(DataBase));
+            //services.AddSingleton(typeof(AppDatabaseContext));
+            services.AddDbContext<AppDatabaseContext>(o => o.UseSqlServer($"Data Source=(local)\\SQLEXPRESS; Database=AppApi; Persist Security Info=false; User ID='TestUser'; Password='1qazxsw2#Art'; MultipleActiveResultSets=True; Trusted_Connection=False;"));
             services.AddControllers();
         }
 
