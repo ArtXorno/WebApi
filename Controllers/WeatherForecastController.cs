@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WebApiApp.Models;
 
 namespace WebApiApp.Controllers
 {
@@ -11,29 +12,58 @@ namespace WebApiApp.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        AppDatabaseContext _db;
+        private AppDatabaseContext _DbContext;
 
         //внедрение зависимости
-        public WeatherForecastController(AppDatabaseContext db) => this._db = db;
+        public WeatherForecastController(AppDatabaseContext DbContext)
+        {
+            _DbContext = DbContext;
+        }
 
-       // [HttpGet]
-       // public IEnumerable<string> Get() => _db;
-             
+        [HttpGet]
+        public IEnumerable<string> Get()
+        {
+            var users = _DbContext.Users.Select(u => u.Name).ToArray();
+            return users;
+        }
 
-        //[HttpPost]
-       // public void Post([FromBody] string value) => _db.Add(value);
+        [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            return _DbContext.Users.Find(id).Name;
+        }
+
+        [HttpPost]
+        public void Post([FromBody] string value , int value2)
+        {
+            User user = new User();
+
+            user.Name = value;
+            user.Age = 20;
+
+            _DbContext.Users.Add(user);
+            _DbContext.SaveChanges();
+        }
 
 
-       // [HttpGet("{index}")]
-       // public string Get(int index) => _db[index];
-              
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody]string value)
+        {
+            User user = _DbContext.Users.Find(id);
+            user.Name = value;
 
-       // [HttpPut("{id}")]
-       // public void Put(int id, [FromBody]string value) => _db[id] = value;
-        
+            _DbContext.SaveChanges();
+        }
 
-       // [HttpDelete("{value}")]
-       // public void Delete(string value) => _db.Remove(value);
-        
+
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            User user = _DbContext.Users.Find(id);
+            _DbContext.Users.Remove(user);
+
+            _DbContext.SaveChanges();
+        }
+
     }
 }
